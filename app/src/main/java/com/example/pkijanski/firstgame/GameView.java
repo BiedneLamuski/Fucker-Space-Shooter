@@ -3,9 +3,14 @@ package com.example.pkijanski.firstgame;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.example.pkijanski.firstgame.gameobjects.Background;
+import com.example.pkijanski.firstgame.gameobjects.Character;
+import com.example.pkijanski.firstgame.gameobjects.HateStream;
 
 /**
  * Created by PKijanski on 05.03.2018.
@@ -15,6 +20,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private MainThread  thread;
     private Character   character;
+    private Background  background;
+    private HateStream  hateStream;
 
     public GameView(Context context) {
         super(context);
@@ -29,6 +36,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         character = new Character(BitmapFactory.decodeResource(getResources(), R.drawable.fucker));
+        background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.cosmos));
+        hateStream = new HateStream(BitmapFactory.decodeResource(getResources(), R.drawable.hate));
         thread.isRunning(true);
         thread.start();;
     }
@@ -53,6 +62,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
+        hateStream.update();
         character.update();
     }
 
@@ -60,7 +70,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
         if(null != canvas) {
+            background.draw(canvas);
             character.draw(canvas);
+            hateStream.draw(canvas);
         }
     }
 
@@ -73,15 +85,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
-                character.stopStart();
+                character.stopStart(new Point(x, y));
+                hateStream.shoot(character.getCurrentPosition());
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                character.updateCords(x, y);
+                //not used now
                 break;
 
             case MotionEvent.ACTION_UP:
-                character.stopStart();
+                character.stopStart(new Point(x, y));
                 break;
         }
         return true;
