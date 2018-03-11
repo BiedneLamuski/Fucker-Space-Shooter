@@ -19,7 +19,7 @@ public class Character {
     private int         x, y;
     private int         destX, destY;
 
-    private final static int velocity = 10;
+    private final static int velocity = 30;
 
     private final static int screenX = Resources.getSystem().getDisplayMetrics().widthPixels;
     private final static int screenY = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -48,33 +48,29 @@ public class Character {
     }
 
     public void update(){
-        if (x != destX) {
-            x += velocity * Math.signum(destX - x);
 
-            if (destX < x + velocity && destX > x - velocity) {
-                destX= x;
-            }
-        }
-        if (y != destY) {
-            y += velocity * Math.signum(destY -y);
-
-            if (destY < y + velocity && destY > y - velocity) {
-                destY = y;
-            }
+        if(isMoving && x != destX && y != destY) {
+            int delta_x = destX - x;
+            int delta_y = destY - y;
+            double direction = Math.atan2(delta_y, delta_x); // Math.atan2(deltaY, deltaX) does the same thing but checks for deltaX being zero to prevent divide-by-zero exceptions
+            double x_inc = (velocity * Math.cos(direction));
+            double y_inc = (velocity * Math.sin(direction));
+            x += x_inc;
+            y += y_inc;
         }
     }
 
-    public void stopStart(Point point) {
-        if (isMoving) {
-            isMoving = false;
-
-            if (null != point) {
-                destX = point.x - (character.getWidth()/2);
-                destY = point.y - (character.getHeight()/2);
-            }
-        } else if (!isMoving) {
-            isMoving = true;
+    public void moveTo(Point point) {
+        isMoving = true;
+        if (null != point) {
+            destX = point.x - (character.getWidth()/2);
+            destY = point.y - (character.getHeight()/2);
         }
+    }
+
+
+    public void stopMoving() {
+        isMoving = false;
     }
 
     public Point getCurrentPosition() {

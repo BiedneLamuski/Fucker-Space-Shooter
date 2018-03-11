@@ -35,11 +35,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        character = new Character(BitmapFactory.decodeResource(getResources(), R.drawable.fucker));
+        character = new Character(BitmapFactory.decodeResource(getResources(), R.drawable.spaceship));
         background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.cosmos));
         hateStream = new HateStream(BitmapFactory.decodeResource(getResources(), R.drawable.hate));
         thread.isRunning(true);
-        thread.start();;
+        thread.start();
     }
 
     @Override
@@ -85,16 +85,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
-                character.stopStart(new Point(x, y));
-                hateStream.shoot(character.getCurrentPosition());
+                character.moveTo(new Point(x, y));
+//                hateStream.shoot(character.getCurrentPosition());
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                //not used now
+                character.moveTo(new Point(x, y));
                 break;
 
             case MotionEvent.ACTION_UP:
-                character.stopStart(new Point(x, y));
+                character.stopMoving();
                 break;
         }
         return true;
