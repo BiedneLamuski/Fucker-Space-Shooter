@@ -1,6 +1,7 @@
 package com.example.pkijanski.firstgame;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -9,8 +10,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.example.pkijanski.firstgame.gameobjects.Background;
-import com.example.pkijanski.firstgame.gameobjects.Character;
-import com.example.pkijanski.firstgame.gameobjects.HateStream;
+import com.example.pkijanski.firstgame.gameobjects.MoveUp;
+import com.example.pkijanski.firstgame.gameobjects.SpaceObject;
+import com.example.pkijanski.firstgame.gameobjects.moveactions.MoveToFinger;
+import com.example.pkijanski.firstgame.gameobjects.moveactions.Moveable;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by PKijanski on 05.03.2018.
@@ -18,10 +25,22 @@ import com.example.pkijanski.firstgame.gameobjects.HateStream;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
+    private final static int screenX = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private final static int screenY = Resources.getSystem().getDisplayMetrics().heightPixels;
+    private static final int PLAYER_VELOCITY = 30;
+
+
     private MainThread  thread;
-    private Character   character;
+    private SpaceObject character;
     private Background  background;
-    private HateStream  hateStream;
+    private SpaceObject  hateStream;
+
+    private long lastTimeWhenshooted = 0;
+
+    private Set<SpaceObject> spaceObjects = new HashSet<>();
+    private boolean screenTouched = false;
+    private long shootingSpped = 500;
+
 
     public GameView(Context context) {
         super(context);
@@ -35,11 +54,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        character = new Character(BitmapFactory.decodeResource(getResources(), R.drawable.spaceship));
+
+        createPlayerShip();
         background = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.cosmos));
-        hateStream = new HateStream(BitmapFactory.decodeResource(getResources(), R.drawable.hate));
         thread.isRunning(true);
         thread.start();
+    }
+
+    private void createPlayerShip() {
+
+        Moveable playerMove = new MoveToFinger(PLAYER_VELOCITY);
+        character = new SpaceObject(BitmapFactory.decodeResource(getResources(), R.drawable.spaceship), (screenX / 2), screenY - 20, playerMove);
+
+        spaceObjects.add(character);
     }
 
     @Override
@@ -62,8 +89,32 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-        hateStream.update();
-        character.update();
+
+        shoot();
+
+        Iterator<SpaceObject> spacjeObjectsIterator = spaceObjects.iterator();
+
+        while(spacjeObjectsIterator.hasNext()) {
+            SpaceObject object = spacjeObjectsIterator.next();
+            object.update();
+            if(object.getCurrentPosition().x < 0 || object.getCurrentPosition().y < 0) {
+                System.out.println("Deleting object: "  + object.toString());
+                spacjeObjectsIterator.remove();
+            }
+        }
+
+    }
+
+    private void shoot() {
+        long currentTimeMillis = System.currentTimeMillis();
+        if(screenTouched && currentTimeMillis - lastTimeWhenshooted > shootingSpped) {
+            System.out.println("Shooting!");
+            Moveable moveUp = new MoveUp(20);
+            spaceObjects.add(new SpaceObject(BitmapFactory.decodeResource(getResources(), R.drawable.hate), character.getCurrentPosition().x, character.getCurrentPosition().y, moveUp));
+            lastTimeWhenshooted = currentTimeMillis;
+        }
+
+
     }
 
     @Override
@@ -71,8 +122,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
         if(null != canvas) {
             background.draw(canvas);
-            character.draw(canvas);
-            hateStream.draw(canvas);
+
+            for(SpaceObject object : spaceObjects) {
+                object.draw(canvas);
+            }
         }
     }
 
@@ -83,10 +136,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int y = (int) event.getY();
         int eventaction = event.getAction();
 
+
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
+                screenTouched = true;
+
                 character.moveTo(new Point(x, y));
-//                hateStream.shoot(character.getCurrentPosition());
+
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -94,6 +150,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
 
             case MotionEvent.ACTION_UP:
+                screenTouched = false;
                 character.stopMoving();
                 break;
         }
