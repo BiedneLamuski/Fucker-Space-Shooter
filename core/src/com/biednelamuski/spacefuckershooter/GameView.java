@@ -31,7 +31,7 @@ public class GameView implements ApplicationListener, InputProcessor {
      STATIC CONFIGURABLE
 **************************************************************************************************/
     private final static long SHOOTING_SPPED = 500;
-    private final static int PLAYER_VELOCITY = 30;
+    private final static int PLAYER_VELOCITY = 5;
 
 /**************************************************************************************************
     VARIABLES
@@ -114,7 +114,7 @@ public class GameView implements ApplicationListener, InputProcessor {
     private void createPlayerShip() {
 
         Moveable playerMove = new MoveToFinger(PLAYER_VELOCITY);
-        character = new SpaceObject("spaceship.png", (SCREEN_X / 2), 20, playerMove);
+        character = new SpaceObject("spaceships/battleship_1.png", (SCREEN_X / 2), 120, playerMove);
 
         spaceObjects.add(character);
     }
@@ -140,8 +140,8 @@ public class GameView implements ApplicationListener, InputProcessor {
         long currentTimeMillis = System.currentTimeMillis();
         if (screenTouched && currentTimeMillis - lastTimeWhenshooted > SHOOTING_SPPED) {
             System.out.println("Shooting!");
-            Moveable moveUp = new MoveUp(20);
-            spaceObjects.add(new SpaceObject("hate.png", character.getCurrentPosition().x, character.getCurrentPosition().y, moveUp));
+            Moveable moveUp = new MoveUp(10);
+            spaceObjects.add(new SpaceObject("sci-fi-effects/pulsating_beam/Beam.atlas", 1/15f, character.getCurrentPosition().x, character.getCurrentPosition().y, moveUp));
             lastTimeWhenshooted = currentTimeMillis;
         }
 

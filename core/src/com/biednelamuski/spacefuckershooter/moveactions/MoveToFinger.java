@@ -14,7 +14,6 @@ public class MoveToFinger implements Moveable {
 
     private final int velocity;
 
-    private final static int MOVE_THRESHOLD = 30;
 
 
     public MoveToFinger(int velocity)
@@ -24,10 +23,7 @@ public class MoveToFinger implements Moveable {
 
     @Override
     public void update() {
-        if(isMoving && Math.abs(x - destX) < MOVE_THRESHOLD && Math.abs(y - destY) < MOVE_THRESHOLD) {
-            isMoving = false;
-        }
-        if(isMoving && x != destX && y != destY) {
+        if(isMoving && (x != destX || y != destY)) {
             int delta_x = destX - x;
             int delta_y = destY - y;
             double direction = Math.atan2(delta_y, delta_x); // Math.atan2(deltaY, deltaX) does the same thing but checks for deltaX being zero to prevent divide-by-zero exceptions
@@ -54,7 +50,7 @@ public class MoveToFinger implements Moveable {
             System.out.println("Moving to point: " + point.x + "." + point.y);
             isMoving = true;
             destX = point.x;
-            destY = point.y + 150;
+            destY = point.y;
         }
     }
 
