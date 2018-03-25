@@ -140,8 +140,8 @@ public class GameView implements ApplicationListener, InputProcessor {
         long currentTimeMillis = System.currentTimeMillis();
         if (screenTouched && currentTimeMillis - lastTimeWhenshooted > SHOOTING_SPPED) {
             System.out.println("Shooting!");
-            Moveable moveUp = new MoveUp(10);
-            spaceObjects.add(new SpaceObject("sci-fi-effects/pulsating_beam/Beam.atlas", 1/15f, character.getCurrentPosition().x, character.getCurrentPosition().y, moveUp));
+            Moveable moveUp = new MoveUp(40);
+            spaceObjects.add(new SpaceObject("sci-fi-effects/pulsating_beam/Beam.atlas", 1/5f, character.getCurrentPosition().x, character.getCurrentPosition().y, moveUp));
             lastTimeWhenshooted = currentTimeMillis;
         }
 
