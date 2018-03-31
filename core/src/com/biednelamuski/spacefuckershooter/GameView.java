@@ -130,6 +130,7 @@ public class GameView implements ApplicationListener, InputProcessor {
             object.update();
             if (object.getCurrentPosition().x < 0 || object.getCurrentPosition().y < 0) {
                 System.out.println("Deleting object: " + object.toString());
+                object.dispose();
                 spacjeObjectsIterator.remove();
             }
         }
