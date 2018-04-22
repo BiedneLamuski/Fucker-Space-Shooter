@@ -3,98 +3,92 @@ package com.biednelamuski.spacefuckershooter.gameobjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.GridPoint2;
-import com.biednelamuski.spacefuckershooter.GameView;
-import com.biednelamuski.spacefuckershooter.moveactions.Moveable;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.utils.Align;
+import com.biednelamuski.spacefuckershooter.moveactions.MoveAction;
+import com.biednelamuski.spacefuckershooter.moveactions.MoveToDirection;
 
 /**
  * Created by deamo on 24.03.2018.
  */
 
-public class SpaceObject implements Moveable, Drawable, Shooting{
+public final class SpaceObject extends Actor implements Shooting{
     final static int SHOOTER_WIDTH = 150;
 
     //in %. How big it should be respectively to the screen.
     final static float size = 10f/100;
 
+    private MoveToAction moveAction;
 
     private Sprite image;
     private Animation<TextureRegion> animation;
-    private Moveable moveType;
     private TextureAtlas textureAtlas;
     private float ellapsedTime = 0;
 
-    public SpaceObject(String imagePath, int startingX, int startingY, Moveable moveType) {
+    public SpaceObject(String imagePath, float startingX, float startingY, MoveToAction moveAction) {
 
+        this.moveAction = moveAction;
+        setPosition(startingX, startingY);
         Texture texture = new Texture(imagePath);
 
-        float ratio = (float)texture.getWidth() / (float)texture.getHeight();
         image = new Sprite(texture);
-        image.setSize(GameView.SCREEN_X * size, GameView.SCREEN_X * size / ratio);
-
-        this.moveType = moveType;
-        this.moveType.setPosition(new GridPoint2(startingX, startingY ));
     }
 
-    public SpaceObject(String imagePath, float animationSpeed, int startingX, int startingY, Moveable moveType) {
+    public SpaceObject(String imagePath, float animationSpeed, float startingX, float startingY, MoveToAction moveAction) {
+
+        this.moveAction = moveAction;
+        setPosition(startingX, startingY);
+
+        new TextureAtlas();
 
         textureAtlas = new TextureAtlas(Gdx.files.internal(imagePath));
         animation = new Animation<TextureRegion>(animationSpeed, textureAtlas.getRegions());
-        this.moveType = moveType;
-        this.moveType.setPosition(new GridPoint2(startingX, startingY ));
     }
 
-    public void draw(SpriteBatch batch) {
-        GridPoint2 currentPosition = moveType.getCurrentPosition();
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
 
         if(animation != null) {
             ellapsedTime += Gdx.graphics.getDeltaTime();
             TextureRegion textureRegion = (TextureRegion) animation.getKeyFrame(ellapsedTime, true);
-            currentPosition.add((int)(-1*textureRegion.getRegionWidth()/2), (int)(-1*textureRegion.getRegionHeight()/2));
-            batch.draw(textureRegion, currentPosition.x, currentPosition.y);
+            batch.draw(textureRegion, getX(), getY());
         }
         else {
-            currentPosition.add((int)(-1*image.getWidth()/2), (int)(-1*image.getHeight()/2));
-            image.setPosition(currentPosition.x, currentPosition.y);
+            image.setPosition(getX(), getY());
+            image.setRotation(getRotation());
             image.draw(batch);
         }
 
     }
 
-    public void update() {
-        moveType.update();
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
     }
 
     @Override
-    public void moveTo(GridPoint2 point) {
-        moveType.moveTo(point);
+    public void shoot(float x, float y) {
+        System.out.println("pew pew");
+
+        SpaceObject projectile = new SpaceObject("sci-fi-effects/pulsating_star/03.png", getX(Align.center), getY(Align.center), new MoveToDirection(800));
+        projectile.moveTo(x,y);
+        getStage().addActor(projectile);
     }
 
-    @Override
-    public void setPosition(GridPoint2 point) {
+    public void moveTo(float x, float y) {
+        moveAction.setPosition(x, y, Align.center);
 
-    }
-
-    public void stopMoving() {
-        moveType.stopMoving();
-    }
-
-    public GridPoint2 getCurrentPosition() {
-        return moveType.getCurrentPosition();
-    }
-
-    @Override
-    public void dispose() {
-        if(image != null)  image.getTexture().dispose();
-        if(textureAtlas != null) textureAtlas.dispose();
-    }
-
-    @Override
-    public void shoot() {
-
+        if(!getActions().contains(moveAction, true))
+        {
+            addAction(moveAction);
+        }
     }
 }

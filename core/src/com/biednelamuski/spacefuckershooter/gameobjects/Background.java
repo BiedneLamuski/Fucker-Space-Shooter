@@ -1,33 +1,24 @@
 package com.biednelamuski.spacefuckershooter.gameobjects;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.biednelamuski.spacefuckershooter.GameView;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.biednelamuski.spacefuckershooter.SpaceShooterGame;
 
 
-public class Background implements Drawable{
-
-    private Sprite background;
-
-    //TODO: to implement orientation support in libGDX
-//    private final static int orientation = Resources.getSystem().getConfiguration().orientation;
-    private final static int portraitRot = 90;
-    private final static int landscapeRot = 90;
-
-    public Background(String imagePath) {
-            Texture tex = new Texture(imagePath);
-            background = new Sprite(tex);
-            background.setSize(GameView.SCREEN_X, GameView.SCREEN_Y);
+public class Background extends Image {
+    public Background(final Texture texture) {
+        super(texture);
     }
 
     @Override
-    public void dispose() {
-        background.getTexture().dispose();
-    }
-
-    @Override
-    public void draw(SpriteBatch batch) {
-        background.draw(batch);
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
     }
 }

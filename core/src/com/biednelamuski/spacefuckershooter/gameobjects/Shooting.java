@@ -6,5 +6,5 @@ package com.biednelamuski.spacefuckershooter.gameobjects;
 
 public interface Shooting {
 
-    void shoot();
+    void shoot(float x, float y);
 }

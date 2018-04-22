@@ -1,65 +1,41 @@
 package com.biednelamuski.spacefuckershooter.moveactions;
 
-import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.utils.Align;
 
 /**
  * Created by deamo on 24.03.2018.
  */
 
-public class MoveToFinger implements Moveable {
-
-    private boolean isMoving = false;
-    private int x, y;
-    private int destX, destY;
+public class MoveToFinger extends MoveToAction implements MoveAction {
 
     private final int velocity;
 
 
-
-    public MoveToFinger(int velocity)
-    {
+    public MoveToFinger(int velocity) {
         this.velocity = velocity;
     }
 
     @Override
-    public void update() {
-        if(isMoving && (x != destX || y != destY)) {
-            int delta_x = destX - x;
-            int delta_y = destY - y;
-            double direction = Math.atan2(delta_y, delta_x); // Math.atan2(deltaY, deltaX) does the same thing but checks for deltaX being zero to prevent divide-by-zero exceptions
-            double x_inc = (velocity * Math.cos(direction));
-            double y_inc = (velocity * Math.sin(direction));
-            x += x_inc;
-            y += y_inc;
+    public boolean act(float delta) {
+        float delta_x = getX() - target.getX();
+        float delta_y = getY() - target.getY();
+        double direction = Math.atan2(delta_y, delta_x); // Math.atan2(deltaY, deltaX) does the same thing but checks for deltaX being zero to prevent divide-by-zero exceptions
+        float x_inc = (float) (delta * velocity * Math.cos(direction));
+        float y_inc = (float) (delta * velocity * Math.sin(direction));
+
+        target.setPosition(target.getX() + x_inc, target.getY() + y_inc);
+
+        if (target.getX() == getX() && target.getY() == getY()) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-
-    @Override
-    public void stopMoving() {
-        isMoving = false;
+    public void moveTo(float x, float y) {
+        System.out.println("Moving to point: " + x + "." + y);
+        setPosition(x, y, Align.center);
     }
-
-    @Override
-    public GridPoint2 getCurrentPosition() {
-        return new GridPoint2(x, y);
-    }
-
-    public void moveTo(GridPoint2 point) {
-        if (null != point) {
-            System.out.println("Moving to point: " + point.x + "." + point.y);
-            isMoving = true;
-            destX = point.x;
-            destY = point.y;
-        }
-    }
-
-    @Override
-    public void setPosition(GridPoint2 point) {
-        System.out.println("Set position" + point.x + "." + point.y);
-        x = point.x;
-        y = point.y;
-    }
-
-
 }
