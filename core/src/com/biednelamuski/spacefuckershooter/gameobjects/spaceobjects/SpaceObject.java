@@ -1,4 +1,4 @@
-package com.biednelamuski.spacefuckershooter.gameobjects;
+package com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,47 +7,55 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.utils.Align;
-import com.biednelamuski.spacefuckershooter.moveactions.MoveAction;
-import com.biednelamuski.spacefuckershooter.moveactions.MoveToDirection;
 
 /**
  * Created by deamo on 24.03.2018.
  */
 
-public final class SpaceObject extends Actor implements Shooting{
-    final static int SHOOTER_WIDTH = 150;
+public class SpaceObject extends Actor{
+    private final Body body;
 
-    //in %. How big it should be respectively to the screen.
-    final static float size = 10f/100;
-
-    private MoveToAction moveAction;
+    private MoveToAction currentMoveAction;
+    private float ellapsedTime = 0;
 
     private Sprite image;
     private Animation<TextureRegion> animation;
     private TextureAtlas textureAtlas;
-    private float ellapsedTime = 0;
 
-    public SpaceObject(String imagePath, float startingX, float startingY, MoveToAction moveAction) {
-
-        this.moveAction = moveAction;
+    public SpaceObject(Texture texture, float startingX, float startingY, World world) {
         setPosition(startingX, startingY);
-        Texture texture = new Texture(imagePath);
 
         image = new Sprite(texture);
+        setHeight(image.getHeight());
+        setWidth((image.getWidth()));
+
+        body = createPhysicalBody(world);
     }
 
-    public SpaceObject(String imagePath, float animationSpeed, float startingX, float startingY, MoveToAction moveAction) {
+    private Body createPhysicalBody(World world) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
-        this.moveAction = moveAction;
+        bodyDef.position.set(getX(), getY());
+
+        return world.createBody(bodyDef);
+    }
+
+    public SpaceObject(String imagePath, float animationSpeed, float startingX, float startingY, World world) {
         setPosition(startingX, startingY);
 
         new TextureAtlas();
 
         textureAtlas = new TextureAtlas(Gdx.files.internal(imagePath));
         animation = new Animation<TextureRegion>(animationSpeed, textureAtlas.getRegions());
+
+        body = createPhysicalBody(world);
     }
 
 
@@ -68,27 +76,23 @@ public final class SpaceObject extends Actor implements Shooting{
 
     }
 
-
     @Override
     public void act(float delta) {
         super.act(delta);
+
+        setPosition(body.getPosition().x, body.getPosition().y);
     }
 
-    @Override
-    public void shoot(float x, float y) {
-        System.out.println("pew pew");
-
-        SpaceObject projectile = new SpaceObject("sci-fi-effects/pulsating_star/03.png", getX(Align.center), getY(Align.center), new MoveToDirection(800));
-        projectile.moveTo(x,y);
-        getStage().addActor(projectile);
-    }
-
-    public void moveTo(float x, float y) {
-        moveAction.setPosition(x, y, Align.center);
+    public void move(MoveToAction moveAction) {
 
         if(!getActions().contains(moveAction, true))
         {
+            removeAction(currentMoveAction);
             addAction(moveAction);
         }
+    }
+
+    public Body getBody() {
+        return body;
     }
 }
