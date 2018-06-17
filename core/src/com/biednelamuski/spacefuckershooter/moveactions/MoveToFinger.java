@@ -1,14 +1,12 @@
 package com.biednelamuski.spacefuckershooter.moveactions;
 
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.utils.Align;
 
 /**
  * Created by deamo on 24.03.2018.
  */
 
-public class MoveToFinger extends MoveToAction{
+public class MoveToFinger extends MoveAction{
 
     private final float accleration;
 

@@ -6,10 +6,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.biednelamuski.spacefuckershooter.SpaceShooterGame;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.components.Engine;
-import com.biednelamuski.spacefuckershooter.moveactions.MoveToDirection;
 
 public abstract class PlayerShipFactory {
 
@@ -39,7 +37,7 @@ public abstract class PlayerShipFactory {
 //        mass
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
+        fixtureDef.density = 0.01f;
         fixtureDef.restitution = 0;
         fixtureDef.friction = 0;
 
@@ -54,13 +52,10 @@ public abstract class PlayerShipFactory {
     private static void createBasicEngine(SpaceShip playerShip)
     {
         float energyConsumption = 100;
-        float thrust = 1000;
+        float thrust = 200;
         float reverseThrust = 1000;
-        float rotationTrhust = 1000;
-
-        MoveToAction moveToAction = new MoveToDirection();
-
-        Engine basicEngine = new Engine(energyConsumption, thrust, reverseThrust, rotationTrhust, moveToAction);
-
+        float rotationTrhust = 15000;
+        Engine basicEngine = new Engine(energyConsumption, thrust, reverseThrust, rotationTrhust);
+        playerShip.mountEngine(basicEngine);
     }
 }

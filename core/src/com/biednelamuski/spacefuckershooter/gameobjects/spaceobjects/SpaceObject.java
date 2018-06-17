@@ -7,18 +7,21 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.utils.Align;
+import com.biednelamuski.spacefuckershooter.gameobjects.GameWorld;
+import com.biednelamuski.spacefuckershooter.moveactions.MoveAction;
 
 /**
  * Created by deamo on 24.03.2018.
  */
 
-public class SpaceObject extends Actor{
+public class SpaceObject extends Actor implements Moveable{
     private final Body body;
 
     private MoveToAction currentMoveAction;
@@ -29,13 +32,12 @@ public class SpaceObject extends Actor{
     private TextureAtlas textureAtlas;
 
     public SpaceObject(Texture texture, float startingX, float startingY, World world) {
-        setPosition(startingX, startingY);
-
         image = new Sprite(texture);
         setHeight(image.getHeight());
         setWidth((image.getWidth()));
 
         body = createPhysicalBody(world);
+        setPosition(startingX, startingY);
     }
 
     private Body createPhysicalBody(World world) {
@@ -80,19 +82,51 @@ public class SpaceObject extends Actor{
     public void act(float delta) {
         super.act(delta);
 
-        setPosition(body.getPosition().x, body.getPosition().y);
-    }
 
-    public void move(MoveToAction moveAction) {
-
-        if(!getActions().contains(moveAction, true))
-        {
-            removeAction(currentMoveAction);
-            addAction(moveAction);
-        }
+        setX(body.getPosition().x* GameWorld.scaleFactor, Align.center);
+        setY(body.getPosition().y * GameWorld.scaleFactor, Align.center);
+        setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+//        System.out.println("Rot speed: " + (float)(getRotation() - rotation));
     }
 
     public Body getBody() {
         return body;
+    }
+
+    @Override
+    public void setPosition(float x, float y, int alignment) {
+        super.setPosition(x, y, alignment);
+        body.getPosition().set(this.getX()/GameWorld.scaleFactor, this.getY()/GameWorld.scaleFactor);
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        body.getPosition().set(this.getX()/GameWorld.scaleFactor, this.getY()/GameWorld.scaleFactor);
+    }
+
+    @Override
+    public float getAccelerationSpeed() {
+        return 0;
+    }
+
+    @Override
+    public float getBreakingSpeed() {
+        return 0;
+    }
+
+    @Override
+    public float getRotationSpeed() {
+        return 0;
+    }
+
+    @Override
+    public void move(MoveAction moveAction) {
+        if(!getActions().contains(moveAction, true))
+        {
+            removeAction(currentMoveAction);
+            currentMoveAction = moveAction;
+            addAction(moveAction);
+        }
     }
 }

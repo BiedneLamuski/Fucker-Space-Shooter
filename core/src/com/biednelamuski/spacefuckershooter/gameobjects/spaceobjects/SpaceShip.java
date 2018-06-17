@@ -2,7 +2,6 @@ package com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Align;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.components.Engine;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.components.SpaceObjectComponent;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.components.Weapon;
@@ -53,12 +52,18 @@ public class SpaceShip extends SpaceObject{
         return engine;
     }
 
-    public void moveTo(float x, float y) {
+    @Override
+    public float getAccelerationSpeed() {
+        return engine.getThrust();
+    }
 
+    @Override
+    public float getBreakingSpeed() {
+        return engine.getReverseTrhust();
+    }
 
-
-
-        engine.getMoveToAction().setPosition(x, y, Align.center);
-        move(engine.getMoveToAction());
+    @Override
+    public float getRotationSpeed() {
+        return engine.getRotationThrust();
     }
 }

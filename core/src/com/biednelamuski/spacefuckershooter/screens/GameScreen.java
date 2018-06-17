@@ -42,11 +42,14 @@ public class GameScreen implements Screen {
 
         gameworld = new GameWorld(new FitViewport(SpaceShooterGame.WORLD_X, SpaceShooterGame.WORLD_Y), assetManager);
 
+
         Gdx.input.setInputProcessor(gameworld);
 
         Background image = new Background((Texture) assetManager.get("backgrounds/background_green.jpg"));
         image.setPosition(SpaceShooterGame.WORLD_X/2, SpaceShooterGame.WORLD_Y/2, Align.center);
         gameworld.addActor(image);
+
+        playerShip = gameworld.createPlayerShip();
 
     }
 
@@ -57,7 +60,9 @@ public class GameScreen implements Screen {
         gameworld.getCamera().position.set(playerShip.getX(Align.center), playerShip.getY(Align.center),0);
         clearScreen();
         gameworld.draw();
+
     }
+
 
     @Override
     public void resize(int width, int height) {

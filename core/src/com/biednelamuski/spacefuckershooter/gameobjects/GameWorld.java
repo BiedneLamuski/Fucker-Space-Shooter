@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.PlayerShipFactory;
 import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.SpaceObject;
+import com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects.SpaceShip;
 import com.biednelamuski.spacefuckershooter.screens.MainGestureListiner;
 
 public class GameWorld extends Stage{
@@ -14,14 +15,16 @@ public class GameWorld extends Stage{
     private final AssetManager assetManager;
     private final World world;
 
-    private final SpaceObject playerShip;
+    // scaleFactor pixesl = 1 m
+    public static final float scaleFactor = 1000;
+
 
     public GameWorld(final FitViewport fitViewport, final AssetManager assetManager)
     {
         super(fitViewport);
         this.assetManager = assetManager;
         world = new World(new Vector2(0,0), true);
-        playerShip = createPlayerShip();
+        this.setDebugAll(true);
     }
 
     @Override
@@ -31,13 +34,11 @@ public class GameWorld extends Stage{
     }
 
 
-    private SpaceObject createPlayerShip()
+    public SpaceObject createPlayerShip()
     {
-        SpaceObject playerShip = PlayerShipFactory.createPlayerShip(assetManager, world);
+        SpaceShip playerShip = PlayerShipFactory.createPlayerShip(assetManager, world);
         addActor(playerShip);
         addListener(new MainGestureListiner(playerShip));
         return playerShip;
     }
-
-
 }
