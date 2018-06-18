@@ -32,7 +32,7 @@ public class MoveInDirection extends MoveAction {
     @Override
     public void setActor(Actor actor) {
         super.setActor(actor);
-        startingAngle = moveableTarget.getBody().getAngle();
+        startingAngle = moveableTarget.getBody().getAngle() * MathUtils.radiansToDegrees;
         determineRotationRirection();
 
     }
@@ -58,17 +58,23 @@ public class MoveInDirection extends MoveAction {
             return true;
         }
 
-        System.out.println("Velocity: " + moveableTarget.getBody().getAngularVelocity() + "\t" + currentRotation + "/" + endAngle);
+        System.out.println((int)startingAngle + " -> " + (int)endAngle + "/tDifference: " + (int)(endAngle - startingAngle) + "(" + rotationDirection + ")\tMiddle: " + (int)(startingAngle + (endAngle - startingAngle)/2) + "\tVelocity: " + moveableTarget.getBody().getAngularVelocity() + "\t" + currentRotation + "/" + endAngle);
         if(rotationDirection == RotationDirection.RIGHT)
         {
-            if(currentRotation + moveableTarget.getBody().getAngularVelocity() > (endAngle - startingAngle)/2)
+            if(currentRotation + moveableTarget.getBody().getAngularVelocity()> startingAngle + (endAngle - startingAngle)/2)
             {
-                moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos + moveableTarget.getHeight() / 2, true);
-                moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos - moveableTarget.getHeight() / 2, true);
-            } else if(currentRotation <= (endAngle - startingAngle)/2)   {
-                if (currentRotation + moveableTarget.getBody().getAngularVelocity() > endAngle) {
-                    moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos + moveableTarget.getHeight() / 2, true);
-                    moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos - moveableTarget.getHeight() / 2, true);
+//                moveableTarget.getBody().applyTorque(-moveableTarget.getRotationSpeed() * delta, true);
+                moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, 0, (moveableTarget.getHeight()/2), true);
+                moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, 0, 0 - (moveableTarget.getHeight()/2), true);
+            } else if(currentRotation <= startingAngle +  (endAngle - startingAngle)/2)   {
+                if (currentRotation + moveableTarget.getBody().getAngularVelocity()> endAngle) {
+                    if (moveableTarget.getBody().getAngularVelocity() > -0.01) {
+                        moveableTarget.getBody().setAngularVelocity(-0.01f);
+                    } else {
+//                    moveableTarget.getBody().applyTorque(moveableTarget.getRotationSpeed() * delta, true);
+                        moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, 0, (moveableTarget.getHeight() / 2), true);
+                        moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, 0, 0 - (moveableTarget.getHeight() / 2), true);
+                    }
                 }
                 else {
                     isRotated = true;
@@ -78,14 +84,18 @@ public class MoveInDirection extends MoveAction {
 
         } else {
 
-            if(currentRotation + moveableTarget.getBody().getAngularVelocity() < (endAngle - startingAngle)/2)
+            if(currentRotation + moveableTarget.getBody().getAngularVelocity() * delta < startingAngle + (endAngle - startingAngle)/2)
             {
                 moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos + moveableTarget.getHeight() / 2, true);
                 moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos - moveableTarget.getHeight() / 2, true);
-            } else if(currentRotation >= (endAngle - startingAngle)/2)   {
+            } else if(currentRotation >= startingAngle + (endAngle - startingAngle)/2)   {
                 if (currentRotation + moveableTarget.getBody().getAngularVelocity() < endAngle) {
-                    moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos + moveableTarget.getHeight() / 2, true);
-                    moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos - moveableTarget.getHeight() / 2, true);
+                    if (moveableTarget.getBody().getAngularVelocity() < 0.01) {
+                        moveableTarget.getBody().setAngularVelocity(0.01f);
+                    } else {
+                        moveableTarget.getBody().applyForce(moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos + moveableTarget.getHeight() / 2, true);
+                        moveableTarget.getBody().applyForce(-moveableTarget.getRotationSpeed() * delta, 0, xPos, yPos - moveableTarget.getHeight() / 2, true);
+                    }
                 }
                 else {
                     isRotated = true;
@@ -131,7 +141,7 @@ public class MoveInDirection extends MoveAction {
     private boolean moveTowards(float delta) {
         float x_inc = (float) (delta * moveableTarget.getAccelerationSpeed() * Math.cos(direction));
         float y_inc = (float) (delta * moveableTarget.getAccelerationSpeed() * Math.sin(direction));
-        moveableTarget.getBody().applyForce(x_inc, y_inc, moveableTarget.getBody().getWorldCenter().x, moveableTarget.getBody().getWorldCenter().y, true);
+//        moveableTarget.getBody().applyForce(x_inc, y_inc, moveableTarget.getBody().getWorldCenter().x, moveableTarget.getBody().getWorldCenter().y, true);
 
         return false;
     }
