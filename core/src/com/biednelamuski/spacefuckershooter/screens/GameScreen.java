@@ -25,6 +25,7 @@ public class GameScreen implements Screen {
     private Set<SpaceObject> spaceObjects = new HashSet<SpaceObject>();
     private GameWorld gameworld;
     private SpaceObject playerShip;
+    private Background image;
     private final AssetManager assetManager = new AssetManager();
 
     public GameScreen() {
@@ -45,8 +46,7 @@ public class GameScreen implements Screen {
 
         Gdx.input.setInputProcessor(gameworld);
 
-        Background image = new Background((Texture) assetManager.get("backgrounds/background_green.jpg"));
-        image.setPosition(SpaceShooterGame.WORLD_X/2, SpaceShooterGame.WORLD_Y/2, Align.center);
+        image = new Background((Texture) assetManager.get("backgrounds/background_green.jpg"));
         gameworld.addActor(image);
 
         playerShip = gameworld.createPlayerShip();
@@ -58,8 +58,12 @@ public class GameScreen implements Screen {
 
         gameworld.act(delta);
         gameworld.getCamera().position.set(playerShip.getX(Align.center), playerShip.getY(Align.center),0);
+        image.setSize(gameworld.getCamera().viewportWidth*gameworld.getCamera().zoom, gameworld.getCamera().viewportHeight*gameworld.getCamera().zoom);
+        image.setPosition(gameworld.getCamera().position.x, gameworld.getCamera().position.y, Align.center);
         clearScreen();
         gameworld.draw();
+
+
 
     }
 

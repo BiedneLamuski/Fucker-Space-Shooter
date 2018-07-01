@@ -26,7 +26,7 @@ public abstract class PlayerShipFactory {
         // We are a box, so this makes sense, no?
         // Basically set the physics polygon to a box with the same dimensions
 //        as our sprite
-        shape.setAsBox(playerShip.getWidth()/2, playerShip.getHeight()/2);
+        shape.setAsBox(playerShip.getWidth(), playerShip.getHeight());
 
         // FixtureDef is a confusing expression for physical properties
         // Basically this is where you, in addition to defining the shape of the
@@ -52,9 +52,9 @@ public abstract class PlayerShipFactory {
     private static void createBasicEngine(SpaceShip playerShip)
     {
         float energyConsumption = 100;
-        float thrust = 200;
+        float thrust = 1000;
         float reverseThrust = 1000;
-        float rotationTrhust = 15000;
+        float rotationTrhust = 300000;
         Engine basicEngine = new Engine(energyConsumption, thrust, reverseThrust, rotationTrhust);
         playerShip.mountEngine(basicEngine);
     }

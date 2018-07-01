@@ -1,19 +1,21 @@
 package com.biednelamuski.spacefuckershooter.gameobjects.spaceobjects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.utils.Align;
 import com.biednelamuski.spacefuckershooter.gameobjects.GameWorld;
 import com.biednelamuski.spacefuckershooter.moveactions.MoveAction;
 
@@ -21,7 +23,7 @@ import com.biednelamuski.spacefuckershooter.moveactions.MoveAction;
  * Created by deamo on 24.03.2018.
  */
 
-public class SpaceObject extends Actor implements Moveable{
+public class SpaceObject extends Actor implements Moveable {
     private final Body body;
 
     private MoveToAction currentMoveAction;
@@ -30,6 +32,7 @@ public class SpaceObject extends Actor implements Moveable{
     private Sprite image;
     private Animation<TextureRegion> animation;
     private TextureAtlas textureAtlas;
+    private ShapeRenderer renderer = new ShapeRenderer();
 
     public SpaceObject(Texture texture, float startingX, float startingY, World world) {
         image = new Sprite(texture);
@@ -45,7 +48,6 @@ public class SpaceObject extends Actor implements Moveable{
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         bodyDef.position.set(getX(), getY());
-
         return world.createBody(bodyDef);
     }
 
@@ -65,17 +67,31 @@ public class SpaceObject extends Actor implements Moveable{
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        if(animation != null) {
+        if (animation != null) {
             ellapsedTime += Gdx.graphics.getDeltaTime();
             TextureRegion textureRegion = (TextureRegion) animation.getKeyFrame(ellapsedTime, true);
             batch.draw(textureRegion, getX(), getY());
-        }
-        else {
+        } else {
+
             image.setPosition(getX(), getY());
             image.setRotation(getRotation());
             image.draw(batch);
         }
 
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(2);
+        font.draw(batch, "Speed: " + body.getLinearVelocity(), getX(), getY()-50);
+
+        batch.end();
+//        renderer.setProjectionMatrix(batch.getProjectionMatrix());
+//        renderer.begin(ShapeRenderer.ShapeType.Filled);
+//        renderer.setColor(Color.GREEN);
+//        renderer.circle(body.getPosition().x * GameWorld.scaleFactor, body.getPosition().y * GameWorld.scaleFactor, 1);
+//        renderer.setColor(Color.RED);
+////        renderer.circle((body.getPosition().x* GameWorld.scaleFactor + getWidth()/2), (body.getPosition().y) * GameWorld.scaleFactor + getHeight()/2, 5);
+//        renderer.circle(body.getWorldCenter().x, body.getWorldCenter().y,10);
+//        renderer.end();
+        batch.begin();
     }
 
     @Override
@@ -83,10 +99,9 @@ public class SpaceObject extends Actor implements Moveable{
         super.act(delta);
 
 
-        setX(body.getPosition().x* GameWorld.scaleFactor, Align.center);
-        setY(body.getPosition().y * GameWorld.scaleFactor, Align.center);
+        setX(body.getPosition().x * GameWorld.scaleFactor);
+        setY(body.getPosition().y * GameWorld.scaleFactor);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-//        System.out.println("Rot speed: " + (float)(getRotation() - rotation));
     }
 
     public Body getBody() {
@@ -96,13 +111,13 @@ public class SpaceObject extends Actor implements Moveable{
     @Override
     public void setPosition(float x, float y, int alignment) {
         super.setPosition(x, y, alignment);
-        body.getPosition().set(this.getX()/GameWorld.scaleFactor, this.getY()/GameWorld.scaleFactor);
+        body.getPosition().set(this.getX() / GameWorld.scaleFactor, this.getY() / GameWorld.scaleFactor);
     }
 
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
-        body.getPosition().set(this.getX()/GameWorld.scaleFactor, this.getY()/GameWorld.scaleFactor);
+        body.getPosition().set(this.getX() / GameWorld.scaleFactor, this.getY() / GameWorld.scaleFactor);
     }
 
     @Override
@@ -122,8 +137,7 @@ public class SpaceObject extends Actor implements Moveable{
 
     @Override
     public void move(MoveAction moveAction) {
-        if(!getActions().contains(moveAction, true))
-        {
+        if (!getActions().contains(moveAction, true)) {
             removeAction(currentMoveAction);
             currentMoveAction = moveAction;
             addAction(moveAction);
