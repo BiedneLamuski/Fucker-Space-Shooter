@@ -12,9 +12,11 @@ import com.biednelamuski.spacefuckershooter.moveactions.MoveInDirection;
 
 public class MainGestureListiner extends ActorGestureListener implements PlayerControls {
 
-    final private SpaceShip playerShip;
-    private GameWorld gameWorld;
-
+    private static final float ZOOM_THRESHOLD = 0.0f;
+    private final SpaceShip playerShip;
+    private final GameWorld gameWorld;
+    private float initialDistance;
+    private float initialZoom;
 
     public MainGestureListiner(SpaceShip playerShip, GameWorld gameWorld)
     {
@@ -38,10 +40,23 @@ public class MainGestureListiner extends ActorGestureListener implements PlayerC
     @Override
     public void zoom(InputEvent event, float initialDistance, float distance) {
         super.zoom(event, initialDistance, distance);
-        OrthographicCamera camera = ((OrthographicCamera)gameWorld.getCamera());
-        camera.zoom *= initialDistance/distance;
-//        camera.update();
-        System.out.println("ZOOOMING!: " + initialDistance + " -> " + distance);
+
+        OrthographicCamera camera = gameWorld.getCamera();
+        if(this.initialDistance != initialDistance)
+        {
+            this.initialDistance = initialDistance;
+            this.initialZoom = camera.zoom;
+        }
+
+        float newZoom = initialZoom * initialDistance/distance;
+
+        if(Math.abs(camera.zoom - newZoom) < ZOOM_THRESHOLD)
+        {
+            return;
+        }
+
+        System.out.println("New zoom:" + initialZoom * initialDistance/distance);
+        camera.zoom = initialZoom * initialDistance/distance;
     }
 
     @Override

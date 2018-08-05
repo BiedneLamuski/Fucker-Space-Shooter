@@ -31,6 +31,8 @@ public class GameScreen implements Screen {
     public GameScreen() {
 
 
+
+
         assetManager.getLogger().setLevel(Logger.DEBUG);
         assetManager.load("backgrounds/background_green.jpg", Texture.class);
         assetManager.load("spaceships/battleship_1.png", Texture.class);
@@ -62,9 +64,6 @@ public class GameScreen implements Screen {
         image.setPosition(gameworld.getCamera().position.x, gameworld.getCamera().position.y, Align.center);
         clearScreen();
         gameworld.draw();
-
-
-
     }
 
 

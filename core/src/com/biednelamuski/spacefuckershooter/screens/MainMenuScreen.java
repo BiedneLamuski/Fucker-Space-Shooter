@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.biednelamuski.spacefuckershooter.SpaceShooterGame;
 
@@ -36,10 +35,13 @@ public class MainMenuScreen implements Screen {
 
         menuBacground = new Texture("backgrounds/cosmos.jpg");
         Image image = new Image(menuBacground);
+        image.setSize(SpaceShooterGame.WORLD_X, SpaceShooterGame.WORLD_Y);
         stage.addActor(image);
 
         startButtonTexture = new Texture("startButton.png");
         ImageButton startButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(startButtonTexture)),new TextureRegionDrawable(new TextureRegion(startButtonTexture)));
+        float aspectRatio = startButton.getWidth()/startButton.getHeight();
+        startButton.setSize(SpaceShooterGame.WORLD_X/3,SpaceShooterGame.WORLD_X/3/aspectRatio);
         startButton.setPosition(SpaceShooterGame.WORLD_X/2f, SpaceShooterGame.WORLD_Y/2f, Align.center);
         startButton.addListener(new ActorGestureListener() {
             @Override

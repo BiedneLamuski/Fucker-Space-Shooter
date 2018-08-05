@@ -21,8 +21,8 @@ public class SpaceShip extends SpaceObject{
     private Collection<Weapon> weapons = new HashSet<Weapon>();
     private SpaceObjectComponent powerGenerator;
 
-    public SpaceShip(Texture texture, float startingX, float startingY, World world) {
-        super(texture, startingX, startingY, world);
+    public SpaceShip(Texture texture, float startingX, float startingY, World world, int height, int witdh, boolean keepAspectRatio) {
+        super(texture, startingX, startingY, world, height, witdh, keepAspectRatio);
     }
 
 

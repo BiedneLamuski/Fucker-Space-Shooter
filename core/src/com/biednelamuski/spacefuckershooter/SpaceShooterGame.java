@@ -5,8 +5,8 @@ import com.biednelamuski.spacefuckershooter.screens.MainMenuScreen;
 
 public class SpaceShooterGame extends Game{
 
-    public static int WORLD_X = 1080;
-    public static int WORLD_Y = 1920;
+    public static int WORLD_X = 54;
+    public static int WORLD_Y = 96;
 
 
     @Override
